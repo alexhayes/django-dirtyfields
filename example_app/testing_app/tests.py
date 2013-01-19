@@ -50,7 +50,7 @@ class DirtyFieldsMixinTestCase(TestCase):
         foreign_model.save()
         tm.foreign = foreign_model
         self.assertEqual(tm.get_dirty_fields(), {
-                'foreign': None})
+                'foreign_id': None})
         tm.save()
         self.assertEqual(tm.get_dirty_fields(), {})
 
@@ -63,7 +63,15 @@ class DirtyFieldsMixinTestCase(TestCase):
         m2m_model.save()
         tm.many_to_many.add(m2m_model)
         self.assertEqual(tm.get_dirty_fields(), {
-                'many_to_many': None})
+                'many_to_many': set() })
         tm.save()
         self.assertEqual(tm.get_dirty_fields(), {})
+
+        second_m2m_model = ManyToManyTestModel(name="m2m_second")
+        second_m2m_model.save()
+        tm.many_to_many.add(second_m2m_model)
+        self.assertEqual(tm.get_dirty_fields(), {
+                'many_to_many': set([m2m_model.pk]) })
+        tm.save()
+
 

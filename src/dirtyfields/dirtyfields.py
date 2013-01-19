@@ -14,12 +14,16 @@ class DirtyFieldsMixin(object):
             (f.attname, getattr(self, f.attname))
             for f in self._meta.local_fields
         ])
-        m2m_fields = dict([
-            (f.attname, set([
-                obj.id for obj in getattr(self, f.attname).all()
-            ]))
-            for f in self._meta.local_many_to_many
-        ])
+
+        m2m_fields = dict([])
+        # Can't access the m2m fields until the model is initialized
+        if self.pk:
+            m2m_fields = dict([
+                    (f.attname, set([
+                                obj.id for obj in getattr(self, f.attname).all()
+                                ]))
+                    for f in self._meta.local_many_to_many
+                    ])
         return fields, m2m_fields
 
     def _reset_state(self, *args, **kwargs):

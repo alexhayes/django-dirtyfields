@@ -7,7 +7,7 @@ class ForeignTestModel(models.Model):
 class ManyToManyTestModel(models.Model):
     name = models.CharField(null=True, max_length=50)
 
-class TestModel(DirtyFieldsMixin, models.Model):
+class TestModel(models.Model, DirtyFieldsMixin):
     """A simple test model to test dirty fields mixin with"""
     boolean = models.BooleanField(default=True)
     characters = models.CharField(blank=True, max_length=80)
