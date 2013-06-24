@@ -7,6 +7,7 @@ from django.db.models.loading import load_app
 from django.db import connection, transaction
 
 from example_app.testing_app.models import TestModel, ForeignTestModel, ManyToManyTestModel
+from dirtyfields.helpers import get_changes
 
 class DirtyFieldsMixinTestCase(TestCase):
 
@@ -74,4 +75,23 @@ class DirtyFieldsMixinTestCase(TestCase):
                 'many_to_many': set([m2m_model.pk]) })
         tm.save()
 
+class DirtyFieldsHelperTestCase(TestCase):
+    
+    def test_dirty_fields(self):
+        tm = TestModel()
+        # initial state shouldn't be dirty
+        self.assertEqual(tm.get_dirty_fields(), {})
 
+        # changing values should flag them as dirty
+        tm.boolean = False
+        tm.characters = 'testing'
+        self.assertEqual(tm.get_dirty_fields(), {
+            'boolean': True,
+            'characters': ''
+        })
+        
+        changes = get_changes(tm)
+        self.assertEqual(changes['boolean']['existing'], True)
+        self.assertEqual(changes['boolean']['new'], False)
+        self.assertEqual(changes['characters']['existing'], '')
+        self.assertEqual(changes['characters']['new'], 'testing')
