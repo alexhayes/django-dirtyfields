@@ -34,7 +34,7 @@ class DirtyFieldsMixin(object):
         changed_fields = dict([
             (key, value)
             for key, value in self._original_state.iteritems()
-            if value != new_state[key]
+            if value.__class__ == new_state[key].__class__ and value != new_state[key]
         ])
         changed_m2m_fields = dict([
             (key, value)
