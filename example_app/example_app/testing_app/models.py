@@ -13,3 +13,4 @@ class TestModel(models.Model, DirtyFieldsMixin):
     characters = models.CharField(blank=True, max_length=80)
     foreign = models.ForeignKey(ForeignTestModel, null=True)
     many_to_many = models.ManyToManyField(ManyToManyTestModel, null=True)
+    created = models.DateTimeField(null=True, blank=True)

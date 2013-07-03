@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.db.models.loading import load_app
 from django.db import connection, transaction
+from datetime import datetime
 
 from example_app.testing_app.models import TestModel, ForeignTestModel, ManyToManyTestModel
 from dirtyfields.helpers import get_changes
@@ -74,6 +75,23 @@ class DirtyFieldsMixinTestCase(TestCase):
         self.assertEqual(tm.get_dirty_fields(), {
                 'many_to_many': set([m2m_model.pk]) })
         tm.save()
+
+    def test_datetime_change(self):
+        tm = TestModel()
+        # initial state shouldn't be dirty
+        self.assertEqual(tm.get_dirty_fields(), {})
+
+        # changing values should flag them as dirty
+        dt = datetime(2013, 1, 1)
+        tm.created = dt
+        self.assertEqual(tm.get_dirty_fields(), {
+            'created': None
+        })
+
+        # resetting them to original values should unflag
+        tm.created = None
+        self.assertEqual(tm.get_dirty_fields(), {})
+
 
 class DirtyFieldsHelperTestCase(TestCase):
     
